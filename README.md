@@ -2,7 +2,7 @@
 
 Este repositório foi criado para ensinar o uso do Docker, criando uma imagem com um Banco de Dados Postgres chamado "Escola" com suas entidades Turma, Professor e Aluno
 
-#3 Estrutura Inicial do Projeto
+## Estrutura Inicial do Projeto
 
 ├── DB/ <!-- Contem os arquivos docker para subir o Banco Escola --><br>
 │ ├── Escola.sql <!-- SQL utilizado para criar o Banco e as tabelas utilizadas no projeto --><br> 
@@ -14,19 +14,17 @@ Este repositório foi criado para ensinar o uso do Docker, criando uma imagem co
 
 Para o Banco de Dados, temos as entidades:
 
-• Turma: possui os campos id_turma, nome, id_professor, etc.
-• Professor: possui os campos id_professor, nome, email, etc.
-• Aluno: possui os campos id_aluno, nome, data_nascimento, etc.
-
-## Relacionamentos
+• Turma: possui os campos id_turma, nome, id_professor, etc. <br>
+• Professor: possui os campos id_professor, nome, email, etc. <br>
+• Aluno: possui os campos id_aluno, nome, data_nascimento, etc. <br>
 
 ## Pré-Requisitos
 
 Para rodarmos essa aplicação, devemos ter algumas ferramentas instaladas na máquina:
 
-• Docker Engine
-• Docker-Compose
-• Editor de Código de sua preferência
+• Docker Engine <br>
+• Docker-Compose <br>
+• Editor de Código de sua preferência <br>
 
 ## Docker-Compose
 
@@ -44,5 +42,109 @@ Execute o comando para iniciar os contêineres com o Docker-Compose:
 ```sh
 docker-compose up --build
 ```
+
+Caso precise parar ou remover contêineres, execute o seguinte comando no diretório raiz:
+```sh
+docker-compose down
+```
+
+## Dockerfile
+
+O Dockerfile se baseia na imagem oficial do PostgreSQL para configurar o ambiente. Ele define o banco de dados com credenciais padrão e transfere um script SQL de inicialização para o diretório apropriado, garantindo que seja executado automaticamente ao iniciar o serviço.
+
+## Estrutura do Dockerfile
+
+```dockerfile
+# Use a imagem oficial do PostgreSQL como base
+FROM postgres:17
+
+# Defina variáveis de ambiente para configurar o PostgreSQL
+ENV POSTGRES_DB=Escola
+ENV POSTGRES_USER=unifaat
+ENV POSTGRES_PASSWORD=unifaat
+
+# Copie o script de inicialização para o diretório de inicialização do PostgreSQL
+COPY Escola.sql /docker-entrypoint-initdb.d/
+
+# Exponha a porta padrão do PostgreSQL
+EXPOSE 5432
+```
+
+## Como utilizar
+
+1. Execute esse comando no diretório do Dockerfile para construir a imagem Docker:
+```bash
+docker build -t my-postgres-image .
+```
+
+2. Para executar o contêiner Docker com a imagem criada, utilize o seguinte comando:
+```bash 
+docker run -d --name my-postgres-container -p 2000:5432 my-postgres-image
+```
+
+3. Você pode se conectar ao PostgreSQL utilizando um cliente PostgreSQL, como dbeaver, psql, ou qualquer ferramenta de gerenciamento de banco de dados que suporte PostgreSQL, utilizando as seguintes credenciais:
+```
+Host: localhost
+Porta: 3000
+Banco de Dados: Escola
+Usuário: unifaat
+Senha: unifaat
+```
+
+## Escola.sql
+
+Script para inicializar o banco de dados com as tabelas necessárias:
+
+<!-- Criação da tabela de Turma -->
+CREATE TABLE Turma (
+    id_turma SERIAL PRIMARY KEY NOT NULL,
+    nome_turma VARCHAR(50) NOT NULL,
+    id_professor INTEGER NOT NULL,
+    horario VARCHAR(100) NOT NULL,
+    FOREIGN KEY (id_professor) REFERENCES Professor(id_professor) <!--id_professor é chave estrangeira em Turma referenciando id_professor em Professor -->
+);
+
+<!-- Criação da tabela de Professor -->
+CREATE TABLE Professor (
+    id_professor SERIAL PRIMARY KEY NOT NULL,
+    nome_completo VARCHAR(255) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    telefone VARCHAR(20) NOT NULL
+);
+
+<!-- Criação da tabela de Aluno -->
+CREATE TABLE Aluno (
+    id_aluno SERIAL PRIMARY KEY NOT NULL,
+    nome_completo VARCHAR(255) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    id_turma INTEGER NOT NULL,
+    nome_responsavel VARCHAR(255) NOT NULL,
+    telefone_responsavel VARCHAR(20) NOT NULL,
+    email_responsavel VARCHAR(100) NOT NULL,
+    informacoes_adicionais TEXT,
+    FOREIGN KEY (id_turma) REFERENCES Turma(id_turma) <!--id_turma é chave estrangeira em Aluno referenciando id_turma em Turma -->
+);
+
+## docker-compose.yml
+
+Com os serviços individuais configurados, agora vamos criar o arquivo docker-compose.yml na raiz do projeto.
+Este arquivo orquestrará todos os nossos containers e definirá como eles se relacionam
+
+version: '3.8'
+services:
+  db:
+    build: ./DB
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: unifaat
+      POSTGRES_PASSWORD: unifaat
+      POSTGRES_DB: Escola
+    ports:
+      - "2000:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
 
 
