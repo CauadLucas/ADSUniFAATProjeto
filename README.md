@@ -95,16 +95,17 @@ Senha: unifaat
 
 Script para inicializar o banco de dados com as tabelas necessárias:
 
-<!-- Criação da tabela de Turma -->
+```sql
+-- Criação da tabela de Turma
 CREATE TABLE Turma (
     id_turma SERIAL PRIMARY KEY NOT NULL,
     nome_turma VARCHAR(50) NOT NULL,
     id_professor INTEGER NOT NULL,
     horario VARCHAR(100) NOT NULL,
-    FOREIGN KEY (id_professor) REFERENCES Professor(id_professor) <!--id_professor é chave estrangeira em Turma referenciando id_professor em Professor -->
+    FOREIGN KEY (id_professor) REFERENCES Professor(id_professor) --id_professor é chave estrangeira em Turma referenciando id_professor em Professor
 );
 
-<!-- Criação da tabela de Professor -->
+-- Criação da tabela de Professor
 CREATE TABLE Professor (
     id_professor SERIAL PRIMARY KEY NOT NULL,
     nome_completo VARCHAR(255) NOT NULL,
@@ -112,7 +113,7 @@ CREATE TABLE Professor (
     telefone VARCHAR(20) NOT NULL
 );
 
-<!-- Criação da tabela de Aluno -->
+-- Criação da tabela de Aluno
 CREATE TABLE Aluno (
     id_aluno SERIAL PRIMARY KEY NOT NULL,
     nome_completo VARCHAR(255) NOT NULL,
@@ -122,7 +123,7 @@ CREATE TABLE Aluno (
     telefone_responsavel VARCHAR(20) NOT NULL,
     email_responsavel VARCHAR(100) NOT NULL,
     informacoes_adicionais TEXT,
-    FOREIGN KEY (id_turma) REFERENCES Turma(id_turma) <!--id_turma é chave estrangeira em Aluno referenciando id_turma em Turma -->
+    FOREIGN KEY (id_turma) REFERENCES Turma(id_turma) --id_turma é chave estrangeira em Aluno referenciando id_turma em Turma
 );
 
 ## docker-compose.yml
@@ -130,6 +131,7 @@ CREATE TABLE Aluno (
 Com os serviços individuais configurados, agora vamos criar o arquivo docker-compose.yml na raiz do projeto.
 Este arquivo orquestrará todos os nossos containers e definirá como eles se relacionam
 
+```yaml
 version: '3.8'
 services:
   db:
