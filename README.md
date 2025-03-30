@@ -126,27 +126,6 @@ CREATE TABLE Aluno (
     FOREIGN KEY (id_turma) REFERENCES Turma(id_turma) --id_turma é chave estrangeira em Aluno referenciando id_turma em Turma
 );
 
-## docker-compose.yml
-
-Com os serviços individuais configurados, agora vamos criar o arquivo docker-compose.yml na raiz do projeto.
-Este arquivo orquestrará todos os nossos containers e definirá como eles se relacionam
-
-```yaml
-version: '3.8'
-services:
-  db:
-    build: ./DB
-    container_name: postgres_db
-    environment:
-      POSTGRES_USER: unifaat
-      POSTGRES_PASSWORD: unifaat
-      POSTGRES_DB: Escola
-    ports:
-      - "2000:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+--Depois que arrumar estilizaão, adicionar sobre o docker-compose.yml--
 
 
